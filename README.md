@@ -1,5 +1,5 @@
 # Deep Convolutional Generative Adversarial Network(DCGAN)
-The repository has implemented the **Deep Convolutional Generative Adversarial Network(DCGAN)** and has been applied to the **ClearbA dataset.**
+The repository has implemented the **Deep Convolutional Generative Adversarial Network(DCGAN)** and has been applied to the **CelebA dataset.**
    
 ## Concept
 **Architecture**
@@ -23,7 +23,7 @@ The repository has implemented the **Deep Convolutional Generative Adversarial N
 * sample_data :  Save sample image to verify the result of creation with DCGAN for every epoch.
 * tensorboard : The trend of loss of generator and detector has been saved.
    
-## Train CelebA dataset
+## Train
 1. Download the CelelbA dataset. ->https://www.kaggle.com/jessicali9530/celeba-dataset
 2. The **read_images** function on **utils.py** has a subfolder that has an image corresponding to each class in the root folder.   
    ```
