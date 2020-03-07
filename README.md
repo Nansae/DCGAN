@@ -24,7 +24,7 @@ The repository has implemented the **Deep Convolutional Generative Adversarial N
 * tensorboard : The trend of loss of generator and detector has been saved.
    
 ## Train
-1. Download the CelelbA dataset. ->https://www.kaggle.com/jessicali9530/celeba-dataset
+1. Download the CelebA dataset. ->https://www.kaggle.com/jessicali9530/celeba-dataset
 2. The **read_images** function on **utils.py** has a subfolder that has an image corresponding to each class in the root folder.   
    ```
    ROOT_FOLDER
