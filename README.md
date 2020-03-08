@@ -54,7 +54,7 @@ I made the kernel size different from the picture above when i implemented it.
 4. The result images are stored per epoch in the **sample_data folder**, and the result images are created with random vectors that you created before the learning begins.
  
 ## Result
-![sample](https://user-images.githubusercontent.com/11286586/76157375-6f8a5680-614b-11ea-9b3b-7ca8a4158cb7.gif)
+![sample](https://user-images.githubusercontent.com/11286586/76157421-02c38c00-614c-11ea-9428-8fc442d6b3c7.gif)
 
 ## Future work
 * Walking in the latent sapce
