@@ -11,8 +11,8 @@ class DCGAN(object):
         self.channels = 3
 
         self.image = tf.placeholder(tf.float32, [None, self.IMG_HEIGHT, self.IMG_WIDTH, self.channels])
-        #self.noise = tf.placeholder(tf.float32, [None, self.IMG_HEIGHT, self.IMG_WIDTH, self.channels])
         self.noise = tf.placeholder(tf.float32, [None, self.latent_dim])
+        #self.noise = tf.placeholder(tf.float32, [None, self.IMG_HEIGHT, self.IMG_WIDTH, self.channels])
 
         self.gene = self.generator(self.noise)
         self.real = self.discriminator(self.image)
@@ -39,40 +39,37 @@ class DCGAN(object):
     def generator(self, input, is_training=True, reuse=False):
         with tf.variable_scope('generator', reuse=reuse) as scope:
             batch_norm_params = {'decay': 0.9,
-                                 'epsilon': 0.001,
-                                 'is_training': is_training,
-                                 'scope': 'batch_norm'}
-            with slim.arg_scope([slim.conv2d, slim.conv2d_transpose],
-                                activation_fn=tf.nn.leaky_relu,
+                                 'is_training': is_training}
+            with slim.arg_scope([slim.conv2d_transpose],
+                                activation_fn=tf.nn.relu,
                                 padding='SAME',
-                                normalizer_fn=None,
-                                normalizer_params=None):
+                                normalizer_fn=slim.batch_norm,
+                                normalizer_params=batch_norm_params):
 
-                net = slim.fully_connected(input, 4*4*128, activation_fn=tf.nn.leaky_relu)
-                net = tf.reshape(net, shape=[-1, 4, 4, 128])
+                net = slim.fully_connected(input, 4*4*1024, activation_fn=None, normalizer_fn=None)
+                net = tf.reshape(net, shape=[-1, 4, 4, 1024])
+                net = tf.nn.relu(slim.batch_norm(net))
 
-                net = slim.conv2d_transpose(net, 128, [3,3], [2,2])
-                net = slim.conv2d_transpose(net, 64, [3,3], [2,2])
-                net = slim.conv2d_transpose(net, 32, [3,3], [2,2])
-                net = slim.conv2d_transpose(net, self.channels, [3,3], [2,2])
+                net = slim.conv2d_transpose(net, 256, [5, 5], [2, 2])
+                net = slim.conv2d_transpose(net, 128, [5, 5], [2, 2])
+                net = slim.conv2d_transpose(net, 64, [5, 5], [2, 2])
+                net = slim.conv2d_transpose(net, self.channels, [5, 5], [2, 2], activation_fn=None, normalizer_fn=None)
                 net = tf.nn.tanh(net)
                 return net
 
     def discriminator(self, input, reuse=False):
         with tf.variable_scope('discriminator', reuse=reuse) as scope:
             batch_norm_params = {'decay': 0.9,
-                                 'epsilon': 0.001,
-                                 'scope': 'batch_norm'}
+                                 'is_training': True}
             with slim.arg_scope([slim.conv2d],                                
                                 padding="SAME",
                                 activation_fn=tf.nn.leaky_relu,
-                                normalizer_fn=None,
-                                normalizer_params=None):
+                                normalizer_fn=slim.batch_norm,
+                                normalizer_params=batch_norm_params):
 
-                net = slim.conv2d(input, 32, [3, 3], [2, 2])
-                net = slim.conv2d(net, 64, [3, 3], [2, 2])
-                net = slim.conv2d(net, 128, [3, 3], [2, 2])
+                net = slim.conv2d(input, 64, [5, 5], [2, 2], normalizer_fn=None)
+                net = slim.conv2d(net, 128, [5, 5], [2, 2])
+                net = slim.conv2d(net, 256, [5, 5], [2, 2])
                 net = slim.flatten(net)
-                #logits = slim.fully_connected(net, 1, activation_fn=tf.nn.sigmoid)
-                logits = slim.fully_connected(net, 1, normalizer_fn=None, activation_fn=None)
+                logits = slim.fully_connected(net, 1, activation_fn=None, normalizer_fn=None)
                 return logits
