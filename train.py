@@ -2,7 +2,7 @@ import utils
 import os, time, math
 import numpy as np
 import tensorflow as tf
-import tensorflow.contrib.slim as slim
+#import tensorflow.contrib.slim as slim
 
 from config import Config
 from model import DCGAN
@@ -16,6 +16,8 @@ model = DCGAN(config.IMG_SIZE, config.IMG_SIZE, config.LATENT_DIM)
 #t_vars = tf.trainable_variables()
 #slim.model_analyzer.analyze_vars(t_vars, print_info=True)
 
+lr = tf.train.exponential_decay(config.INIT_LR, model.global_step, 1000, config.DECAY_RATE, staircase=True)
+
 with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='discriminator')):
     train_D = tf.train.AdamOptimizer(0.0002, beta1=0.5).minimize(model.loss_D, var_list=model.vars_D)
 with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='generator')):
@@ -23,7 +25,7 @@ with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS, scope='g
 
 sess_config = tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True))
 
-images, labels = read_images("D:/data", "folder")
+images, labels = read_images(config.PATH_DATA, "folder")
 num_iters = len(images) // config.BATCH_SIZE
 
 cnt = 0
@@ -54,18 +56,18 @@ with tf.Session(config=sess_config) as sess:
         for idx in range(num_iters):
             st = time.time()
             image_batch = images[idx * config.BATCH_SIZE:(idx + 1) * config.BATCH_SIZE]
+            noise_batch = utils.generate_latent_points(config.LATENT_DIM, config.BATCH_SIZE)
             #noise_batch = np.random.uniform(-1., 1., size=[config.BATCH_SIZE, 100])
             #noise_batch = np.random.uniform(0., 1., size=[config.BATCH_SIZE, config.IMG_SIZE, config.IMG_SIZE, 1])
-            noise_batch = utils.generate_latent_points(config.LATENT_DIM, config.BATCH_SIZE)
-
+            
             # Do the training
             _, loss_D = sess.run([train_D, model.loss_D], feed_dict={model.image:image_batch, model.noise:noise_batch})
             _, loss_G = sess.run([train_G, model.loss_G], feed_dict={model.image:image_batch, model.noise:noise_batch})
-            _, global_step, loss_G = sess.run([train_G, model.global_step, model.loss_G], feed_dict={model.image:image_batch, model.noise:noise_batch})
+            _, learning_rate, global_step, loss_G = sess.run([train_G, lr, model.global_step, model.loss_G], feed_dict={model.image:image_batch, model.noise:noise_batch})
         
             cnt = cnt + config.BATCH_SIZE
             if cnt % 20 == 0:
-                string_print = "Epoch = %d Count = %d Current_Loss_D = %.4f Current_Loss_G = %.4f Time = %.2f"%(epoch, cnt, loss_D, loss_G, time.time()-st)
+                string_print = "Epoch = %d global_step = %d Count = %d Current_Loss_D = %.4f Current_Loss_G = %.4f Learning Rate = %.8f Time = %.2f"%(epoch, global_step, cnt, loss_D, loss_G, learning_rate, time.time()-st)
                 utils.LOG(string_print)
                 st = time.time()
 
@@ -87,11 +89,11 @@ with tf.Session(config=sess_config) as sess:
 
         if epoch % config.CHECKPOINTS_STEP == 0:
             # Create directories if needed
-            if not os.path.isdir("%s/%04d"%("checkpoints",epoch)):
-                os.makedirs("%s/%04d"%("checkpoints",epoch))
+            if not os.path.isdir("%s/%04d"%(config.PATH_CHECKPOINT,epoch)):
+                os.makedirs("%s/%04d"%(config.PATH_CHECKPOINT,epoch))
 
             print('Saving model with global step %d ( = %d epochs) to disk' % (global_step, epoch))
-            saver.save(sess, "%s/%04d/model.ckpt"%("checkpoints",epoch))
+            saver.save(sess, "%s/%04d/model.ckpt"%(config.PATH_CHECKPOINT,epoch))
 
         # Save latest checkpoint to same file name
         print('Saving model with %d epochs to disk' % (epoch))
