@@ -50,7 +50,7 @@ I made the kernel size different from the picture above when i implemented it.
    ```
    Example: Copy thumbnails128x128 to D:/data and Write D:/data/thumbnails128x128 on config.py
    ```
-3. Run train.py
+3. Run **train.py**
 4. The result images are stored per epoch in the **sample_data folder**, and the result images are created with random vectors that you created before the learning begins.
  
 ## Result
