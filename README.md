@@ -29,7 +29,7 @@ I made the kernel size different from the picture above when i implemented it.
 * sample_data :  Save sample image to verify the result of creation with DCGAN for every epoch.
 * tensorboard : The trend of loss of generator and detector has been saved.
    
-## Train Flic
+## Train Flickr Face HQ Dataset
 1. Download [Flickr Face HQ Dataset](https://github.com/NVlabs/ffhq-dataset)
 2. The **read_images** function on **utils.py** has a subfolder that has an image corresponding to each class in the root folder.   
    ```
