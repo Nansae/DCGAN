@@ -9,16 +9,16 @@ class Config(object):
     MODE = ["segment", "decision", "total"]
 
     #PATH
-    PATH_DATA = "medical"
+    PATH_DATA = "D:/data/thumbnails128x128"
     PATH_CHECKPOINT = "checkpoints"
     PATH_TENSORBOARD = "tensorboard"
 
     #PARA
     EPOCH = 50
-    BATCH_SIZE = 4
+    BATCH_SIZE = 10
     MAX_TO_KEEP = 10
-    #LEARNING_RATE = 0.00001
-    #LEARNING_RATE = 0.0001
+    INIT_LR = 0.001
+    DECAY_RATE = 0.9
 
     ##
     IMG_SIZE = 64
