@@ -41,7 +41,7 @@ def read_images(dataset_path, mode):
             # Add each image to the training set
             for sample in walk[2]:
                 # Only keeps jpeg images
-                if sample.endswith('.jpg') or sample.endswith('.jpeg') or sample.endswith('.bmp') or sample.endswith('.tif'):
+                if sample.endswith('.jpg') or sample.endswith('.jpeg') or sample.endswith('.bmp') or sample.endswith('.png'):
                     imagepaths.append(os.path.join(c_dir, sample))
                     labels.append([label, label, label, label, label])
             label += 1
@@ -50,18 +50,15 @@ def read_images(dataset_path, mode):
 
     images = list()
     for p in imagepaths:
-        # image = cv2.imread(p)
         image = Image.open(p)
         if image is None:
             continue
         image = image.convert('RGB')
-        image = image[40:178, 30:148]
         image = image.resize((config.IMG_SIZE, config.IMG_SIZE))
         image = np.asarray(image)
         image = np.float32(image)/127.5 - 1
         #image = np.expand_dims(image, axis=2)
         images.append(image)
-        #cv2.imshow("image", image)
 
     images = np.array(images)
     labels = np.array(labels, dtype=np.int32)
