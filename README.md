@@ -27,7 +27,7 @@ I made the kernel size different from the picture above when i implemented it.
 * utils.py : Various functions such as visualization and loading data
 * checkpoints : A folder that stores learning results with a ckpt extension.
 * sample_data :  Save sample image to verify the result of creation with DCGAN for every epoch.
-* tensorboard : The trend of loss of generator and detector has been saved.
+* tensorboard : The trend of loss of generator and discriminator has been saved.
    
 ## Train Flickr Face HQ Dataset
 1. Download [Flickr Face HQ Dataset](https://github.com/NVlabs/ffhq-dataset)
